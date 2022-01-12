@@ -1,0 +1,51 @@
+#!/bin/bash
+set -e
+# script/cibuild: Setup environment for CI to run tests. 
+# This is primarily designed to run on the continuous integration server.
+
+
+cd "$(dirname "$0")/.."
+
+echo "Tests started at…"
+date "+%H:%M:%S"
+
+# passing state to ds-test
+export DAPP_LIBRARIES=$(dapp --library-addresses)
+export DAPP_TEST_STATE=$(dapp --make-library-state)
+
+
+# setup environment
+FOUNDRY_ROOT="$(cd "$(dirname "$0")"/.. && pwd)"
+
+export FOUNDRY_ENV="test"
+export FORGE_ENV="$FOUNDRY_ENV"
+
+export DAPP_REMAPPINGS=$(cat remappings.txt)
+
+export DAPP_SOLC_VERSION=0.8.7
+# If you're getting an "invalid character at offset" error, comment this out.
+export DAPP_LINK_TEST_LIBRARIES=0
+export DAPP_TEST_VERBOSITY=1
+export DAPP_TEST_SMTTIMEOUT=500000
+
+# Optimize your contracts before deploying to reduce runtime execution costs.
+# Check out the docs to learn more: https://docs.soliditylang.org/en/v0.8.9/using-the-compiler.html#optimizer-options
+# export DAPP_BUILD_OPTIMIZE=1
+# export DAPP_BUILD_OPTIMIZE_RUNS=1000000
+
+# set so that we can deploy to local node w/o hosted private keys
+# export ETH_RPC_ACCOUNTS=true
+# Your JSON-RPC Provider
+export ETH_RPC_URL=http://localhost:8545
+export ETH_FROM=YOUR_DEFAULT_SENDER_ACCOUNT
+
+#export ALCHEMY_API_KEY=YOUR_API_KEY
+#export ETHERSCAN_API_KEY=YOUR_API_KEY
+
+
+# run tests
+echo "Running tests…"
+date "+%H:%M:%S"
+
+# run tests.
+scripts/test

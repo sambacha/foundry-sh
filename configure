@@ -1,0 +1,18 @@
+#!/bin/bash
+#-*-Shell-Script-*-
+# foundry setup by sourcing individual plugin-created bash scripts.
+
+export FOUNDRY_USER_HOME=${FOUNDRY_USER_HOME:-$HOME/.foundry/}
+export FOUNDRY_PROGRAMS_DIR=${FOUNDRY_PROGRAMS_DIR:-${FOUNDRY_USER_HOME%%/}/programs}
+export FOUNDRY_HOME=${FOUNDRY_HOME:-$FOUNDRY_PROGRAMS_DIR/foundry}
+
+export PATH="$PATH:$FOUNDRY_HOME/bin"
+
+[[ -d "$FOUNDRY_USER_HOME" ]] && {
+  for foundry_script in $(find "$FOUNDRY_USER_HOME" -mindepth 1 -maxdepth 1 \
+                              -type f -executable -name '*\.sh')
+  do
+    source "$foundry_script"
+  done
+  unset foundry_script
+}
